@@ -51,6 +51,33 @@ def save_uploaded_file(uploaded_file):
 
 st.title("🦺 SafeCap AI 실시간 관제")
 
+# ROI 설정
+# --------------------
+
+show_roi = st.sidebar.checkbox(
+
+    "🟧 위험구역 표시",
+
+    value=True
+
+)
+
+
+roi_alpha = st.sidebar.slider(
+
+    "위험구역 투명도",
+
+    min_value=0.0,
+
+    max_value=1.0,
+
+    value=0.25,
+
+    step=0.05
+
+)
+
+
 c1, c2 = st.columns([1,1], gap="large")
 
 with c1:
@@ -186,7 +213,11 @@ if st.button("▶ 분석 시작"):
 
                 roi1,
 
-                "cam1"
+                "cam1",
+            
+                show_roi,
+
+                roi_alpha
 
             )
 
@@ -231,7 +262,11 @@ if st.button("▶ 분석 시작"):
 
                 roi2,
 
-                "cam2"
+                "cam2",
+
+                show_roi,
+
+                roi_alpha
 
             )
 
@@ -325,3 +360,4 @@ if st.session_state.show_result:
         len(st.session_state.danger_ids)
 
     )
+

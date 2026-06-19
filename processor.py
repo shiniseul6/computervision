@@ -6,7 +6,7 @@ from detector import detect, model
 from roi import is_in_roi
 
 
-def process_frame(frame, roi_points, cam_name):
+def process_frame(frame, roi_points, cam_name, show_roi, roi_alpha = 0.4):
 
     current_helmet = 0
     current_nohelmet = 0
@@ -195,49 +195,34 @@ def process_frame(frame, roi_points, cam_name):
     # -----------------------
     # ROI 표시
     # -----------------------
+    if show_roi:
 
-    overlay = frame.copy()
+        overlay = frame.copy()
 
+        cv2.fillPoly(
 
-    cv2.fillPoly(
+            overlay,
 
-        overlay,
+            [roi_poly],
 
-        [roi_poly],
+            (0,165,255)
 
-        (0,0,255)
-
-    )
-
-
-    frame = cv2.addWeighted(
-
-        overlay,
-
-        0.2,
-
-        frame,
-
-        0.8,
-
-        0
-
-    )
+        )
 
 
-    cv2.polylines(
+        frame = cv2.addWeighted(
 
-        frame,
+            overlay,
 
-        [roi_poly],
+            roi_alpha,
 
-        True,
+            frame,
 
-        (0,0,255),
+            1-roi_alpha,
 
-        3
+            0
 
-    )
+        )
 
 
     return (
