@@ -1,66 +1,119 @@
 import streamlit as st
 import cv2
 import tempfile
+from datetime import datetime
+import pandas as pd
+import plotly.express as px
 
 import processor
 from roi_selector import set_roi_interactive
 
 
+# =====================================
+# PAGE CONFIG
+# =====================================
+
 st.set_page_config(
+
     page_title="SafeCap AI",
+
+    page_icon="🦺",
+
     layout="wide"
+
 )
 
 
-# --------------------
-# Session State
-# --------------------
+
+# =====================================
+# SESSION STATE
+# =====================================
 
 if "helmet_ids" not in st.session_state:
+
     st.session_state.helmet_ids = set()
 
+
+
 if "nohelmet_ids" not in st.session_state:
+
     st.session_state.nohelmet_ids = set()
 
+
+
 if "danger_ids" not in st.session_state:
+
     st.session_state.danger_ids = set()
 
-if "show_result" not in st.session_state:
-    st.session_state.show_result = False
 
 
-# --------------------
-# Save Video
-# --------------------
+if "logs" not in st.session_state:
+
+    st.session_state.logs = []
+
+
+if "logged_danger_ids" not in st.session_state:
+
+    st.session_state.logged_danger_ids = set()
+
+
+# =====================================
+# SAVE VIDEO
+# =====================================
 
 def save_uploaded_file(uploaded_file):
 
     with tempfile.NamedTemporaryFile(
+
         delete=False,
+
         suffix=".mp4"
+
     ) as tmp:
 
-        tmp.write(uploaded_file.read())
+
+        tmp.write(
+
+            uploaded_file.read()
+
+        )
+
 
         return tmp.name
 
 
-# --------------------
-# UI
-# --------------------
 
-st.title("🦺 SafeCap AI 실시간 관제")
 
-# ROI 설정
-# --------------------
+# =====================================
+# TITLE
+# =====================================
+
+st.title("🦺 SafeCap AI")
+
+st.caption(
+
+    "실시간 안전모 착용 및 위험구역 침입 감지 시스템"
+
+)
+
+
+
+# =====================================
+# SIDEBAR
+# =====================================
+
+st.sidebar.header("⚙️ ROI 설정")
+
+
 
 show_roi = st.sidebar.checkbox(
 
-    "🟧 위험구역 표시",
+    "위험구역 표시",
 
     value=True
 
 )
+
 
 
 roi_alpha = st.sidebar.slider(
@@ -71,55 +124,212 @@ roi_alpha = st.sidebar.slider(
 
     max_value=1.0,
 
-    value=0.25,
+    value=0.4,
 
     step=0.05
 
 )
 
 
-c1, c2 = st.columns([1,1], gap="large")
 
-with c1:
+
+# =====================================
+# KPI PLACEHOLDER
+# =====================================
+
+k1,k2,k3,k4 = st.columns(4)
+
+
+helmet_metric = k1.empty()
+
+nohelmet_metric = k2.empty()
+
+danger_metric = k3.empty()
+
+cctv_metric = k4.empty()
+
+
+
+helmet_metric.metric(
+
+    "⛑ Helmet",
+
+    0
+
+)
+
+
+
+nohelmet_metric.metric(
+
+    "❌ No Helmet",
+
+    0
+
+)
+
+
+
+danger_metric.metric(
+
+    "🚨 Danger",
+
+    0
+
+)
+
+
+
+cctv_metric.metric(
+
+    "📹 CCTV",
+
+    2
+
+)
+
+
+
+st.write("---")
+
+
+# =====================================
+# VIDEO UPLOAD
+# =====================================
+
+u1, u2 = st.columns(2)
+
+
+with u1:
 
     video1 = st.file_uploader(
 
-        "CCTV1",
+        "📹 CCTV1",
 
-        type=["mp4","avi"]
+        type=["mp4","avi"],
+
+        key="video1"
 
     )
 
 
-with c2:
+
+with u2:
 
     video2 = st.file_uploader(
 
-        "CCTV2",
+        "📹 CCTV2",
 
-        type=["mp4","avi"]
+        type=["mp4","avi"],
+
+        key="video2"
 
     )
 
 
 
-# --------------------
-# START
-# --------------------
+# =====================================
+# START BUTTON
+# =====================================
 
-if st.button("▶ 분석 시작"):
+start = st.button(
 
+    "▶ 분석 시작",
+
+    use_container_width=True,
+
+    key="start_button"
+
+)
+
+
+
+st.write("---")
+
+
+
+# =====================================
+# DASHBOARD LAYOUT
+# =====================================
+
+left, right = st.columns(
+
+    [3,1]
+
+)
+
+
+
+# =====================================
+# LEFT : LIVE MONITORING
+# =====================================
+
+with left:
+
+
+    st.subheader("📡 실시간 모니터링")
+
+
+    cam1, cam2 = st.columns(2)
+
+
+
+    # 영상 출력용
+
+    frame_area1 = cam1.empty()
+
+    frame_area2 = cam2.empty()
+
+
+
+    # CCTV 상태 출력용
+
+    info_area1 = cam1.empty()
+
+    info_area2 = cam2.empty()
+
+
+
+
+# =====================================
+# RIGHT : LIVE LOG
+# =====================================
+
+with right:
+
+
+    st.subheader("🚨 실시간 로그")
+
+
+    log_area = st.empty()
+
+
+
+
+st.write("---")
+
+
+# =====================================
+# START ANALYSIS
+# =====================================
+
+if start:
 
     if video1 is None or video2 is None:
 
         st.warning(
 
-            "두 개의 영상을 모두 업로드해주세요."
+            "두 개의 영상을 업로드해주세요."
 
         )
 
         st.stop()
 
+
+
+    # -----------------------------
+    # SAVE VIDEO
+    # -----------------------------
 
     path1 = save_uploaded_file(video1)
 
@@ -127,13 +337,16 @@ if st.button("▶ 분석 시작"):
 
 
 
-    # ROI 선택
+    # -----------------------------
+    # ROI SELECT
+    # -----------------------------
 
     st.info(
 
-        "CCTV1 위험구역을 클릭 후 Enter"
+        "CCTV1 위험구역 선택 후 Enter"
 
     )
+
 
     roi1 = set_roi_interactive(
 
@@ -144,11 +357,13 @@ if st.button("▶ 분석 시작"):
     )
 
 
+
     st.info(
 
-        "CCTV2 위험구역을 클릭 후 Enter"
+        "CCTV2 위험구역 선택 후 Enter"
 
     )
+
 
     roi2 = set_roi_interactive(
 
@@ -160,38 +375,27 @@ if st.button("▶ 분석 시작"):
 
 
 
+    # -----------------------------
+    # OPEN VIDEO
+    # -----------------------------
+
     cap1 = cv2.VideoCapture(path1)
 
     cap2 = cv2.VideoCapture(path2)
 
 
 
-    col1, col2 = st.columns(
+    # -----------------------------
+    # VIDEO LOOP
+    # -----------------------------
 
-        [1,1],
-
-        gap="large"
-
-    )
-
-
-    frame_area1 = col1.empty()
-
-    frame_area2 = col2.empty()
-
-
-    info1 = col1.empty()
-
-    info2 = col2.empty()
-
-
-
-    while cap1.isOpened() or cap2.isOpened():
+    while True:
 
 
         ret1, frame1 = cap1.read()
 
         ret2, frame2 = cap2.read()
+
 
 
         if not ret1 and not ret2:
@@ -200,9 +404,9 @@ if st.button("▶ 분석 시작"):
 
 
 
-        # -------------------
+        # =========================
         # CCTV1
-        # -------------------
+        # =========================
 
         if ret1:
 
@@ -214,7 +418,7 @@ if st.button("▶ 분석 시작"):
                 roi1,
 
                 "cam1",
-            
+
                 show_roi,
 
                 roi_alpha
@@ -222,36 +426,49 @@ if st.button("▶ 분석 시작"):
             )
 
 
+
             frame_area1.image(
 
                 frame1,
 
-                channels="BGR"
+                channels="BGR",
 
-            )
-
-
-            info1.markdown(
-
-                f"""
-
-### CCTV1
-
-⛑ Helmet : {h1}
-
-❌ No Helmet : {n1}
-
-🚨 Danger : {d1}
-
-"""
+                use_container_width=True
 
             )
 
 
 
-        # -------------------
+            with info_area1.container():
+
+                st.markdown("### 📹 CCTV1")
+
+                st.success("🟢 LIVE")
+
+                st.write(f"⛑ Helmet : {h1}")
+
+                st.write(f"❌ No Helmet : {n1}")
+
+                st.write(f"🚨 Danger : {d1}")
+
+
+
+            if d1 > 0:
+
+                now = datetime.now().strftime("%H:%M:%S")
+
+
+                st.session_state.logs.append(
+
+                    f"🚨 {now} CCTV1 Danger"
+
+                )
+
+
+
+        # =========================
         # CCTV2
-        # -------------------
+        # =========================
 
         if ret2:
 
@@ -271,71 +488,222 @@ if st.button("▶ 분석 시작"):
             )
 
 
+
             frame_area2.image(
 
                 frame2,
 
-                channels="BGR"
+                channels="BGR",
+
+                use_container_width=True
 
             )
 
 
-            info2.markdown(
 
-                f"""
+            with info_area2.container():
 
-### CCTV2
+                st.markdown("### 📹 CCTV2")
 
-⛑ Helmet : {h2}
+                st.success("🟢 LIVE")
 
-❌ No Helmet : {n2}
+                st.write(f"⛑ Helmet : {h2}")
 
-🚨 Danger : {d2}
+                st.write(f"❌ No Helmet : {n2}")
 
-"""
-
-            )
+                st.write(f"🚨 Danger : {d2}")
 
 
+
+            if d2 > 0:
+
+                now = datetime.now().strftime("%H:%M:%S")
+
+
+                st.session_state.logs.append(
+
+                    f"🚨 {now} CCTV2 Danger"
+
+                )
+
+
+
+        # =========================
+        # KPI UPDATE
+        # =========================
+
+        helmet_metric.metric(
+
+            "⛑ Helmet",
+
+            len(st.session_state.helmet_ids)
+
+        )
+
+
+        nohelmet_metric.metric(
+
+            "❌ No Helmet",
+
+            len(st.session_state.nohelmet_ids)
+
+        )
+
+
+        danger_metric.metric(
+
+            "🚨 Danger",
+
+            len(st.session_state.danger_ids)
+
+        )
+
+
+
+        # =========================
+        # LIVE LOG
+        # =========================
+
+        with log_area.container():
+
+            for log in reversed(
+
+                st.session_state.logs[-5:]
+
+            ):
+
+                st.warning(log)
+
+
+
+    # -----------------------------
+    # RELEASE
+    # -----------------------------
 
     cap1.release()
 
     cap2.release()
 
 
+
     st.success(
 
-        "영상 분석 완료"
+        "✅ 영상 분석 완료"
+
+    )
+
+# =====================================
+# FINAL DASHBOARD
+# =====================================
+
+st.write("---")
+
+st.subheader("📊 최종 탐지 통계")
+
+
+chart_col, stat_col = st.columns([2,1])
+
+
+
+# =====================================
+# DONUT CHART
+# =====================================
+
+with chart_col:
+
+    df = pd.DataFrame({
+
+        "Class":[
+
+            "Helmet",
+
+            "No Helmet",
+
+        ],
+
+        "Count":[
+
+            len(st.session_state.helmet_ids),
+
+            len(st.session_state.nohelmet_ids),
+
+        ]
+
+    })
+
+
+
+    fig = px.pie(
+
+        df,
+
+        names="Class",
+
+        values="Count",
+
+        hole=0.55,
+        
+        color="Class",
+
+        color_discrete_map={
+
+        "Helmet":"#10B981",      
+
+        "No Helmet":"#F59E0B",   
+        }
+    )
+
+    fig.update_traces(
+
+        textinfo="percent",
+
+        marker=dict(
+
+            line=dict(
+
+                color="#0E1117",
+
+                width=5
+
+            )
+
+        )
+    )
+
+
+
+    fig.update_layout(
+
+        paper_bgcolor="#0E1117",
+
+        plot_bgcolor="#0E1117",
+
+        font_color="white",
+
+        legend_font_color="white"
 
     )
 
 
-    st.session_state.show_result = True
 
+    st.plotly_chart(
 
+        fig,
 
-
-# --------------------
-# Final Result
-# --------------------
-
-if st.session_state.show_result:
-
-
-    st.write("---")
-
-
-    st.subheader(
-
-        "📊 최종 누적 결과"
+        use_container_width=True
 
     )
 
 
-    c1, c2, c3 = st.columns(3)
+
+# =====================================
+# SUMMARY CARD
+# =====================================
+
+with stat_col:
 
 
-    c1.metric(
+    st.metric(
 
         "⛑ Helmet",
 
@@ -344,7 +712,7 @@ if st.session_state.show_result:
     )
 
 
-    c2.metric(
+    st.metric(
 
         "❌ No Helmet",
 
@@ -353,11 +721,46 @@ if st.session_state.show_result:
     )
 
 
-    c3.metric(
+    st.metric(
 
         "🚨 Danger",
 
-        len(st.session_state.danger_ids)
+        len(st.session_state.logged_danger_ids)
 
     )
 
+
+
+st.write("---")
+
+
+
+# =====================================
+# RECENT EVENTS
+# =====================================
+
+st.subheader("📌 최근 이벤트")
+
+
+
+if len(st.session_state.logs)==0:
+
+    st.info(
+
+        "이벤트가 없습니다."
+
+    )
+
+
+
+else:
+
+
+    for log in reversed(
+
+        st.session_state.logs[-10:]
+
+    ):
+
+
+        st.warning(log)

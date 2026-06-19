@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import streamlit as st
-
+from datetime import datetime
 from detector import detect, model
 from roi import is_in_roi
 
@@ -153,10 +153,17 @@ def process_frame(frame, roi_points, cam_name, show_roi, roi_alpha = 0.4):
                     current_danger += 1
 
 
-                    if unique_id not in st.session_state.danger_ids:
+                    if unique_id not in st.session_state.logged_danger_ids:
 
-                        st.session_state.danger_ids.add(unique_id)
+                        st.session_state.logged_danger_ids.add(unique_id)
 
+                        now = datetime.now().strftime("%H:%M:%S")
+
+                        st.session_state.logs.append(
+
+                            f"🚨 {now} | {cam_name.upper()} Danger"
+
+                        )
 
                     cv2.rectangle(
 
