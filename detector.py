@@ -32,9 +32,9 @@ def detect(frame):
 
         device=DEVICE,
 
-        conf=0.10,
+        conf=0.30,
 
-        iou=0.30,
+        iou=0.50,
 
         imgsz=416,
 

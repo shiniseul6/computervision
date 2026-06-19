@@ -647,9 +647,9 @@ with chart_col:
 
         color_discrete_map={
 
-        "Helmet":"#10B981",      
+        "Helmet":"#22C55E",      
 
-        "No Helmet":"#F59E0B",   
+        "No Helmet":"#FACC15"
         }
     )
 
