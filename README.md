@@ -139,7 +139,7 @@ computervision/
 ├── bestv2.pt
 ├── requirements.txt
 ├── README.md
-└── images/
+└── image/
     ├── main
     ├── detect.png
     └── dashboard.png
