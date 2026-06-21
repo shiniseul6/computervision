@@ -32,7 +32,7 @@ def detect(frame):
 
         device=DEVICE,
 
-        conf=0.30,
+        conf=0.34,
 
         iou=0.50,
 
