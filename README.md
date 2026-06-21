@@ -65,38 +65,36 @@ pip install -r requirements.txt
 
 ---
 
-# 설치 및 실행 방법
+## 1. 저장소 다운로드
 
-### 1. 저장소 다운로드
-
-bash
+```bash
 git clone https://github.com/shiniseul6/computervision.git
 cd computervision
+```
 
+## 2. 가상환경 생성
 
-### 2. 가상환경 생성
-
-bash
+```bash
 python -m venv venv
+```
 
+## 3. 가상환경 실행
 
-### 3. 가상환경 실행
-
-bash
+```bash
 venv\Scripts\activate
+```
 
+## 4. 라이브러리 설치
 
-### 4. 라이브러리 설치
-
-bash
+```bash
 pip install -r requirements.txt
+```
 
+## 5. 프로그램 실행
 
-### 5. 프로그램 실행
-
-bash
+```bash
 streamlit run app.py
-
+```
 
 브라우저에서 Streamlit 페이지가 열리면 분석할 영상을 업로드하여 사용할 수 있습니다.
 
