@@ -59,9 +59,9 @@ SafeCap AI는 업로드한 영상을 분석하여 작업자(Person), 안전모(H
 
 프로젝트 실행에 필요한 라이브러리는 requirements.txt 파일에 정리되어 있습니다.
 
-bash
+```bash
 pip install -r requirements.txt
-
+```
 
 ---
 
