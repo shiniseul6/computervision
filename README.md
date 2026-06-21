@@ -44,14 +44,14 @@ SafeCap AI는 업로드한 영상을 분석하여 작업자(Person), 안전모(H
 
 # 개발 환경
 
-| 구분        | 내용                 |
-| --------- | ------------------ |
-| Language  | Python 3           |
-| IDE       | Visual Studio Code |
-| Framework | Streamlit          |
-| Model     | Custom YOLO Model  |
-| Tracking  | ByteTrack          |
-| Library   | OpenCV, PyTorch    |
+| 구분      | 내용                                        |
+| --------- | ------------------------------------------- |
+| Language  | Python 3                                    |
+| IDE       | Visual Studio Code                          |
+| Framework | Streamlit (1.58.0)                          |
+| Model     | YOLOv8 (Ultralytics 8.4.70, Custom Trained) |
+| Tracking  | ByteTrack                                   |
+| Library   | OpenCV, PyTorch                             |
 
 ---
 
