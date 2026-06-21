@@ -30,15 +30,15 @@ SafeCap AI는 업로드한 영상을 분석하여 작업자(Person), 안전모(H
 
 ### 메인 화면
 
-![메인 화면](images/main.png)
+![메인 화면](image/main.png)
 
 ### 객체 탐지
 
-![객체 탐지](images/detect.png)
+![객체 탐지](image/detect.png)
 
 ### 결과 화면
 
-![결과 화면](images/dashboard.png)
+![결과 화면](image/dashboard.png)
 
 ---
 
