@@ -102,7 +102,7 @@ streamlit run app.py
 
 ---
 
-# 데이터 처리 과정
+## 데이터 처리 과정
 
 ```text
 영상 입력
@@ -126,13 +126,13 @@ ByteTrack 객체 추적
    ▼
 로그 저장 및 통계 생성
 ```
-
 ---
 
 # 프로젝트 구조
+## 프로젝트 구조
+
 ```text
-computervision
-│
+computervision/
 ├── app.py
 ├── detector.py
 ├── processor.py
@@ -141,12 +141,11 @@ computervision
 ├── bestv2.pt
 ├── requirements.txt
 ├── README.md
-└── images
-    ├── main
+└── images/
+    ├── main.png
     ├── detect.png
     └── dashboard.png
 ```
-
 ---
 
 # 팀원 역할
