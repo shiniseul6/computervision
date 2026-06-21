@@ -65,6 +65,8 @@ pip install -r requirements.txt
 
 ---
 
+# 설치 및 실행 방법
+
 ## 1. 저장소 다운로드
 
 ```bash
@@ -136,13 +138,15 @@ computervision/
 ├── processor.py
 ├── roi.py
 ├── roi_selector.py
+├── bytetrack.yaml
 ├── bestv2.pt
 ├── requirements.txt
 ├── README.md
-└── image/
-    ├── main.png
-    ├── detect.png
-    └── dashboard.png
+├── image/
+│   ├── main.png
+│   ├── detect.png
+│   └── dashboard.png
+└── runs/
 ```
 ---
 
@@ -161,3 +165,4 @@ computervision/
 * 위험구역 출입 상황을 실시간으로 확인하여 현장 안전관리에 활용할 수 있다.
 * 반복적인 CCTV 모니터링 부담을 줄이고 관리 효율을 높일 수 있다.
 * 실시간 로그와 통계를 제공하여 사고 예방 및 사후 관리에 도움을 줄 수 있다.
+
