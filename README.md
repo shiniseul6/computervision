@@ -65,7 +65,7 @@ pip install -r requirements.txt
 
 ---
 
-# 설치 및 실행 방법
+## 설치 및 실행 방법
 
 ## 1. 저장소 다운로드
 
