@@ -140,7 +140,7 @@ computervision/
 ├── requirements.txt
 ├── README.md
 └── images/
-    ├── main.png
+    ├── main
     ├── detect.png
     └── dashboard.png
 ```
